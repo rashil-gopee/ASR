@@ -1,4 +1,5 @@
 ﻿using System;
+using ASR.View;
 
 namespace ASR
 {
@@ -6,7 +7,7 @@ namespace ASR
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            MenuView.DisplayWelcomeView();
         }
     }
 }
