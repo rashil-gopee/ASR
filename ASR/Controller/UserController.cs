@@ -27,8 +27,7 @@ namespace ASR.Controller
 
                 while (read.Read())
                 {
-                    if (read.GetInt32(0) > 0)
-                        return true;
+                    return read.GetInt32(0) > 0;
                 }
 
                 read.Close();

@@ -24,7 +24,7 @@ namespace ASR.Controller
 
                 while (read.Read())
                 {
-                    room = new RoomModel(read["RoomID"].ToString());
+                    room = new RoomModel(read["RoomID"].ToString()[0]);
                 }
 
                 read.Close();
@@ -63,7 +63,7 @@ namespace ASR.Controller
 
                 while (read.Read())
                 {
-                    rooms.Add(new RoomModel(read["RoomID"].ToString()));
+                    rooms.Add(new RoomModel(read["RoomID"].ToString()[0]));
                 }
 
                 read.Close();

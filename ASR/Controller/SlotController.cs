@@ -8,6 +8,64 @@ namespace ASR.Controller
 {
     public class SlotController
     {
+        public SlotModel GetSlot(string roomId, DateTime dateTime)
+        {
+            SlotModel slot = null;
+            var dateStr = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+            SqlConnection conn = new SqlConnection(Constants.ConnectionString);
+            SqlCommand query = new SqlCommand($"SELECT * from Slot WHERE RoomID = '{roomId}' AND StartTime = '{dateStr}';", conn);
+            SqlDataReader read;
+
+            try
+            {
+                conn.Open();
+
+                read = query.ExecuteReader();
+
+                while (read.Read())
+                {
+                    StaffController staffController;
+                    UserModel staffModel;
+
+                    staffController = new StaffController();
+
+                    staffModel = staffController.GetUser(read["StaffID"].ToString());
+
+                    if (!String.IsNullOrWhiteSpace(read["BookedInStudentID"].ToString()))
+                    {
+                        UserModel studentModel;
+                        StudentController studentController = new StudentController();
+                        studentModel = studentController.GetUser(read["BookedInStudentID"].ToString());
+
+                        slot = new SlotModel(new RoomModel(read["RoomID"].ToString()[0]), Convert.ToDateTime(read["StartTime"]), staffModel, studentModel);
+                    }
+                    else
+                    {
+                        slot = new SlotModel(new RoomModel(read["RoomID"].ToString()[0]), Convert.ToDateTime(read["StartTime"]), staffModel);
+                    }
+                }
+                read.Close();
+            }
+            catch (SqlException se)
+            {
+                Console.WriteLine("SQL Exception: {0}", se.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: {0}", e.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+            }
+
+            return slot;
+        }
+        
         public void CreateSlot(SlotModel slot)
         {
             using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))
@@ -38,9 +96,8 @@ namespace ASR.Controller
             }
         }
 
-        public List<SlotModel> getSlotsByDate(DateTime date)
+        public List<SlotModel> GetSlotsByDate(DateTime date)
         {
-            UserModel personModel;
             List<SlotModel> slots = new List<SlotModel>();
 
             SqlConnection conn = new SqlConnection(Constants.ConnectionString);
@@ -71,11 +128,11 @@ namespace ASR.Controller
                         StudentController studentController = new StudentController();
                         studentModel = studentController.GetUser(read["BookedInStudentID"].ToString());
                         
-                        slots.Add(new SlotModel(new RoomModel(read["RoomID"].ToString()), Convert.ToDateTime(read["StartTime"]), staffModel, studentModel));
+                        slots.Add(new SlotModel(new RoomModel(read["RoomID"].ToString()[0]), Convert.ToDateTime(read["StartTime"]), staffModel, studentModel));
                     }
                     else
                     {
-                        slots.Add(new SlotModel(new RoomModel(read["RoomID"].ToString()), Convert.ToDateTime(read["StartTime"]), staffModel));
+                        slots.Add(new SlotModel(new RoomModel(read["RoomID"].ToString()[0]), Convert.ToDateTime(read["StartTime"]), staffModel));
                     }
                     }
                 read.Close();
@@ -101,16 +158,9 @@ namespace ASR.Controller
 
         public bool CheckIfSlotExists(SlotModel slot)
         {
+            var dateStr = slot.startTime.ToString("yyyy-MM-dd HH:mm:ss");
             SqlConnection conn = new SqlConnection(Constants.ConnectionString);
-            SqlCommand query = new SqlCommand($"SELECT COUNT(*) FROM Slot WHERE RoomID = '{slot.room.RoomId}' AND StartTime < '{slot.startTime}';", conn);
-
-            //using (SqlCommand cmd = new SqlCommand(query, conn))
-            //{
-            //    cmd.Parameters.AddWithValue("StartTime", slot.startTime + "00:00:00");
-            //    cmd.Parameters.AddWithValue("date2", dateAdded2 + "23:59:59");
-            //    SqlDataAdapter da = new SqlDataAdapter(cmd);
-            //    da.Fill(holder);
-            //}
+            SqlCommand query = new SqlCommand($"SELECT COUNT(*) FROM Slot WHERE RoomID = '{slot.room.RoomId}' AND StartTime LIKE '{dateStr}%';", conn);
 
             SqlDataReader read;
 
@@ -122,10 +172,7 @@ namespace ASR.Controller
 
                 while (read.Read())
                 {
-                    Console.WriteLine(read.GetValue(0));
-                    return true;
-                    //if (Int32.Parse(read.GetString(0)) > 0)
-                    //    return true;
+                    return read.GetInt32(0) > 0;
                 }
 
                 read.Close();
@@ -160,7 +207,7 @@ namespace ASR.Controller
                     cmd.Connection = conn;
                     cmd.CommandType = CommandType.Text;
                     
-                    cmd.CommandText = @"UPDATE Slot WHERE RoomID = @RoomID, StartTime = @StartTime SET BookedInStudentID = @BookedInStudentID;";
+                    cmd.CommandText = @"UPDATE Slot SET BookedInStudentID = @BookedInStudentID WHERE RoomID = @RoomID AND StartTime = @StartTime;";
 
                     cmd.Parameters.AddWithValue("@RoomID", slot.room.RoomId);
                     cmd.Parameters.AddWithValue("@StartTime", slot.startTime);
@@ -191,7 +238,39 @@ namespace ASR.Controller
                     cmd.CommandType = CommandType.Text;
 
                     //if (slot.student != null)
-                    cmd.CommandText = @"UPDATE Slot WHERE RoomID = @RoomID, StartTime = @StartTime SET BookedInStudentID = Null";
+                    cmd.CommandText = @"UPDATE Slot SET BookedInStudentID = Null WHERE RoomID = @RoomID AND StartTime = @StartTime";
+
+                    cmd.Parameters.AddWithValue("@RoomID", slot.room.RoomId);
+                    cmd.Parameters.AddWithValue("@StartTime", slot.startTime);
+
+                    try
+                    {
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (SqlException e)
+                    {
+                        Console.WriteLine("SQL Exception: {0}", e.Message);
+                    }
+                    finally
+                    {
+                        Console.WriteLine("Booking has been cancelled successfully!");
+                    }
+
+                }
+            }
+        }
+
+        public void DeleteSlot(SlotModel slot)
+        {
+            using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandType = CommandType.Text;
+                    
+                    cmd.CommandText = @"DELETE FROM Slot WHERE RoomID = @RoomID AND StartTime = @StartTime";
 
                     cmd.Parameters.AddWithValue("@RoomID", slot.room.RoomId);
                     cmd.Parameters.AddWithValue("@StartTime", slot.startTime);
@@ -208,6 +287,88 @@ namespace ASR.Controller
 
                 }
             }
+        }
+
+        public bool IsBookingAllowed(SlotModel slot)
+        {
+            var dateStr = slot.startTime.ToString("yyyy-MM-dd");
+
+            SqlConnection conn = new SqlConnection(Constants.ConnectionString);
+            SqlCommand query = new SqlCommand($"SELECT COUNT(*) FROM Slot WHERE BookedInStudentID = '{slot.student.userId}' AND StartTime LIKE '{dateStr}%';", conn);
+
+            SqlDataReader read;
+
+            try
+            {
+                conn.Open();
+
+                read = query.ExecuteReader();
+
+                while (read.Read())
+                {
+                    return (read.GetInt32(0) < 1);
+                }
+
+                read.Close();
+            }
+            catch (SqlException se)
+            {
+                Console.WriteLine("SQL Exception: {0}", se.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: {0}", e.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+            }
+
+            return false;
+        }
+
+        public bool HasExceededStaffBooking(SlotModel slot)
+        {
+            var dateStr = slot.startTime.ToString("yyyy-MM-dd");
+
+            SqlConnection conn = new SqlConnection(Constants.ConnectionString);
+            SqlCommand query = new SqlCommand($"SELECT COUNT(*) FROM Slot WHERE StaffID = '{slot.staff.userId}' AND StartTime LIKE '{dateStr}%';", conn);
+
+            SqlDataReader read;
+
+            try
+            {
+                conn.Open();
+
+                read = query.ExecuteReader();
+
+                while (read.Read())
+                {
+                    return (read.GetInt32(0) >= 4);
+                }
+
+                read.Close();
+            }
+            catch (SqlException se)
+            {
+                Console.WriteLine("SQL Exception: {0}", se.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: {0}", e.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+            }
+
+            return true;
         }
 
     }

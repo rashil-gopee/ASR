@@ -1,10 +1,12 @@
-﻿namespace ASR.Model
+﻿using System;
+
+namespace ASR.Model
 {
     public class RoomModel
     {
-        public string RoomId { get; set; }
+        public Char RoomId { get; set; }
 
-        public RoomModel(string RoomId)
+        public RoomModel(Char RoomId)
         {
             this.RoomId = RoomId;
         }

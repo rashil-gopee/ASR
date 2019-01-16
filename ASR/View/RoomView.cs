@@ -17,8 +17,6 @@ namespace ASR.View
             {
                 Console.WriteLine("\t" + room.RoomId);
             }
-
-            MenuView.DisplayMainMenu();
         }
     }
 }

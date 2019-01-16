@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ASR.Controller;
 
 namespace ASR.View
 {
     class MenuView
     {
-        public static void DisplayWelcomeView()
+        public MenuView()
         {
             Console.WriteLine("------------------------------------------------------------");
             Console.WriteLine("Welcome to Appointment Scheduling and Reservation System");
@@ -15,11 +16,11 @@ namespace ASR.View
             DisplayMainMenu();
         }
 
-        public static void DisplayMainMenu()
+        public void DisplayMainMenu()
         {
             Console.WriteLine();
             Console.WriteLine("------------------------------------------------------------");
-            Console.WriteLine("Main menu: \t 1. List rooms \t 2. List slots \t 3. Staff Menu \t 4.Student menu \t 5. Exit");
+            Console.WriteLine("Main menu: \t 1. List rooms \t 2. List slots \t 3. Staff Menu \t 4. Student menu \t 5. Exit");
             Console.WriteLine();
 
             var input = Console.ReadLine();
@@ -29,6 +30,7 @@ namespace ASR.View
                 {
                     RoomView roomView = new RoomView();
                     roomView.GetRoomsView();
+                    DisplayMainMenu();
                 }
                 else if (number == 2)
                 {
@@ -57,11 +59,11 @@ namespace ASR.View
 
         }
 
-        public static void DisplayStaffMenu()
+        public void DisplayStaffMenu()
         {
             Console.WriteLine();
             Console.WriteLine("------------------------------------------------------------");
-            Console.WriteLine("Staff menu: \t 1. List staffs \t 2. Room availability \t 3. Create slot \t 4. Remove slot \t 5. Exit");
+            Console.WriteLine("Staff menu: \t 1. List staffs \t 2. Room availability \t 3. Create slot \t 4. Delete slot \t 5. Exit");
             Console.WriteLine();
 
             var input = Console.ReadLine();
@@ -75,12 +77,20 @@ namespace ASR.View
                 }
                 else if (number == 2)
                 {
-
+                    SlotView slotView = new SlotView();
+                    slotView.RoomAvailabilityView();
+                    DisplayStaffMenu();
                 }
                 else if (number == 3)
                 {
                     SlotView slotView = new SlotView();
                     slotView.CreateSlotView();
+                    DisplayStaffMenu();
+                }
+                else if (number == 4)
+                {
+                    SlotView slotView = new SlotView();
+                    slotView.DeleteSlotView();
                     DisplayStaffMenu();
                 }
                 else if (number == 5)
@@ -95,7 +105,7 @@ namespace ASR.View
             }
         }
 
-        public static void DisplayStudentMenu()
+        public void DisplayStudentMenu()
         {
             Console.WriteLine();
             Console.WriteLine("------------------------------------------------------------");
@@ -113,7 +123,21 @@ namespace ASR.View
                 }
                 else if (number == 2)
                 {
-
+                    SlotView slotView = new SlotView();
+                    slotView.ListStaffAvailability();
+                    DisplayStudentMenu();
+                }
+                else if (number == 3)
+                {
+                    SlotView slotView = new SlotView();
+                    slotView.BookSlotView();
+                    DisplayStudentMenu();
+                }
+                else if (number == 4)
+                {
+                    SlotView slotView = new SlotView();
+                    slotView.CancelSlotBookingView();
+                    DisplayStudentMenu();
                 }
                 else if (number == 5)
                 {

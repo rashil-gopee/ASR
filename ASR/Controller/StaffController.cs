@@ -24,7 +24,7 @@ namespace ASR.Controller
 
                 while (read.Read())
                 {
-                    if (read["UserID"].ToString().StartsWith('e'))
+                    if (read["UserID"].ToString().StartsWith('e') && read["Email"].ToString().Substring(read["Email"].ToString().IndexOf("@") + 1) == "rmit.edu.au")
                         personModel = new StaffModel(read["UserID"].ToString(), read["Name"].ToString(),
                         read["Email"].ToString());
                 }
@@ -90,11 +90,7 @@ namespace ASR.Controller
 
             return staffs;
         }
-
-        public void CheckStaffAvailability()
-        {
-
-        }
+       
 
     }
 

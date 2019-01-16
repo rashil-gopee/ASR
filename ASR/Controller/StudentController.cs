@@ -13,7 +13,7 @@ namespace ASR.Controller
         {
             UserModel personModel = null;
             SqlConnection conn = new SqlConnection(Constants.ConnectionString);
-            SqlCommand query = new SqlCommand(String.Format("select from Room where UserID = '{0}'", userID), conn);
+            SqlCommand query = new SqlCommand($"SELECT * FROM [User] WHERE UserID = '{userID}'", conn);
             SqlDataReader read;
 
             try
@@ -24,7 +24,7 @@ namespace ASR.Controller
 
                 while (read.Read())
                 {
-                    if (read["UserID"].ToString().StartsWith('s'))
+                    if (read["UserID"].ToString().StartsWith('s') && read["Email"].ToString().Substring(read["Email"].ToString().IndexOf("@") + 1) == "student.rmit.edu.au")
                         personModel = new StudentModel(read["UserID"].ToString(), read["Name"].ToString(),
                             read["Email"].ToString());
                 }

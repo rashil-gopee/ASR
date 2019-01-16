@@ -7,7 +7,7 @@ namespace ASR
     {
         static void Main(string[] args)
         {
-            MenuView.DisplayWelcomeView();
+            MenuView menuView = new MenuView();
         }
     }
 }
