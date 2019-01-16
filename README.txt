@@ -1,0 +1,3 @@
+1. The Utils and Constants classes have been implemented as Singleton (static class in c#) as only simple access is required to the instance of that class requiring oly one instance of the class. Doing so makes it easy for any other class to access the class instance at anytime.
+
+2. The MVC Design Pattern has been adapted as the structural pattern in the project. It was used mainly to seperate the application's concerns. Models in the project represents object classes. The Views represents the classes that actually presents the data that the model contains visually. The controller sits in between the view and the model and performs all communications to the database to retrieve and save data.
