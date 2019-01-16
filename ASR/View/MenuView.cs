@@ -32,7 +32,17 @@ namespace ASR.View
                 }
                 else if (number == 2)
                 {
-
+                    SlotView slotView = new SlotView();
+                    slotView.ListSlotsView();
+                    DisplayMainMenu();
+                }
+                else if (number == 3)
+                {
+                    DisplayStaffMenu();
+                }
+                else if (number == 4)
+                {
+                    DisplayStudentMenu();
                 }
                 else if (number == 5)
                 {
@@ -41,7 +51,7 @@ namespace ASR.View
             }
             else
             {
-                Console.WriteLine($"{input} is not a number");
+                Console.WriteLine($"{input} is not a valid option");
                 DisplayMainMenu();
             }
 
@@ -59,12 +69,19 @@ namespace ASR.View
             {
                 if (number == 1)
                 {
-                    RoomView roomView = new RoomView();
-                    roomView.GetRoomsView();
+                    StaffView staffView = new StaffView();
+                    staffView.ListStaffView();
+                    DisplayStaffMenu();
                 }
                 else if (number == 2)
                 {
 
+                }
+                else if (number == 3)
+                {
+                    SlotView slotView = new SlotView();
+                    slotView.CreateSlotView();
+                    DisplayStaffMenu();
                 }
                 else if (number == 5)
                 {
@@ -73,7 +90,7 @@ namespace ASR.View
             }
             else
             {
-                Console.WriteLine($"{input} is not a number");
+                Console.WriteLine($"{input} is not a valid option");
                 DisplayStaffMenu();
             }
         }
@@ -90,8 +107,9 @@ namespace ASR.View
             {
                 if (number == 1)
                 {
-                    RoomView roomView = new RoomView();
-                    roomView.GetRoomsView();
+                    StudentView studentView = new StudentView();
+                    studentView.ListStudentsView();
+                    DisplayStudentMenu();
                 }
                 else if (number == 2)
                 {
@@ -104,7 +122,7 @@ namespace ASR.View
             }
             else
             {
-                Console.WriteLine($"{input} is not a number");
+                Console.WriteLine($"{input} is not a valid option");
                 DisplayStudentMenu();
             }
         }

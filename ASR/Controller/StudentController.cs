@@ -12,7 +12,7 @@ namespace ASR.Controller
         public override UserModel GetUser(string userID)
         {
             UserModel personModel = null;
-            SqlConnection conn = new SqlConnection(Constants.CONNECTION);
+            SqlConnection conn = new SqlConnection(Constants.ConnectionString);
             SqlCommand query = new SqlCommand(String.Format("select from Room where UserID = '{0}'", userID), conn);
             SqlDataReader read;
 
@@ -54,8 +54,8 @@ namespace ASR.Controller
         {
             List<UserModel> students = new List<UserModel>();
 
-            SqlConnection conn = new SqlConnection(Constants.CONNECTION);
-            SqlCommand query = new SqlCommand("SELECT * FROM [User] WHERE name LIKE 's%';", conn);
+            SqlConnection conn = new SqlConnection(Constants.ConnectionString);
+            SqlCommand query = new SqlCommand("SELECT * FROM [User] WHERE UserID LIKE 's%';", conn);
             SqlDataReader read;
 
             try

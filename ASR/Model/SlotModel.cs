@@ -4,10 +4,10 @@ namespace ASR.Model
 {
     public class SlotModel
     {
-        private RoomModel room { get; set; }
-        private DateTime startTime { get; set; }
-        private UserModel staff { get; set; }
-        private UserModel student { get; set; }
+        public RoomModel room { get; set; }
+        public DateTime startTime { get; set; }
+        public UserModel staff { get; set; }
+        public UserModel student { get; set; }
 
         public SlotModel(RoomModel room, DateTime startTime, UserModel staff)
         {

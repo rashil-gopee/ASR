@@ -2,9 +2,9 @@
 {
     public abstract class UserModel
     {
-        private string userId { get; set; }
-        private string name { get; set; }
-        private string email { get; set; }
+        public string userId { get; set; }
+        public string name { get; set; }
+        public string email { get; set; }
 
         public UserModel(string userId, string name, string email)
         {
